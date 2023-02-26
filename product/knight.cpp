@@ -49,10 +49,22 @@ struct Knights{
     int Rescue = -1; //fuck me in the ass
     int prevLevel;
     int maxHP = 999;
+    int ghostno = 1;
+
+    bool metAsclepius = 0;
+    bool metMerlin = 0;
+    bool isArthur = 0;
+    bool isLancelot = 0;
+
     void Input(string s){
         stringstream ss(s);
         ss >> HP >> Level >> Remedy >> MaidenKiss >> PhoenixDown;
         maxHP = HP;
+
+        if(HP == 999) 
+            isArthur = 1;
+        if(isPrime(HP)) 
+            isLancelot = 1;
     }
 
     void healthCheck(){
@@ -175,7 +187,7 @@ struct Events{
     void meetNormal(Knights &knight, int index){
         int level0 = levelCalculate(index);
 
-        if (knight.Level > level0){
+        if (knight.Level > level0 || knight.isArthur || knight.isLancelot){
             knight.Level = min(maxLevel, knight.Level + 1);
             return;
         }
@@ -206,7 +218,7 @@ struct Events{
         if(knight.tiny.isTiny || knight.frog.isFrog) return; //became tiny/frog, don't fight
         int level0 = levelCalculate(index);
 
-        if(knight.Level > level0){
+        if(knight.Level > level0 || knight.isArthur || knight.isLancelot){
             knight.Level = min(maxLevel, knight.Level + 2);
             return;
         }
@@ -368,12 +380,93 @@ struct Events{
             knight.PhoenixDown = min(knight.PhoenixDown + 1, maxItem);
     }
 
-    
+    //id = 19, Asclepius with a dildo
+    void meetAsclepius(Knights &knight){
+        ifstream asc(l3files[1]);
+
+        int n, m;
+        asc >> n >> m;
+        for(int i = 1; i <= n; ++i){
+            int cnt = 0;
+            for(int j = 1; j <= m; ++j){
+                int x;
+                asc >> x;
+                if(cnt != 3 && (16 <= x && x <= 18)){
+                    ++cnt;
+                    pickItem(knight, x - 1);
+                }
+                if(cnt == 3)
+                    break;
+            }
+        }
+    }
+
+    //id = 18, witch, kill him
+    void meetMerlin(Knights &knight){
+        ifstream mer(l3files[2]);
+        int n;
+        mer >> n;
+        string Merlin = "Merlin";
+        string merlin = "merlin";
+        for(int i = 0; i < n; ++i){
+            string s;
+            mer >> s;
+            bool check[256] = {};
+            if((int)s.size() < 6) continue;
+            for(int j = 0; j < (int)s.size(); ++j)
+                check[s[j]] = 1;
+            if ((check['m'] || check['M']) && 
+                (check['e'] || check['E']) && 
+                (check['r'] || check['R']) && 
+                (check['l'] || check['L']) && 
+                (check['i'] || check['I']) && 
+                (check['n'] || check['N'])){
+                    knight.HP = min(knight.maxHP, knight.HP + 2);
+                }
+            for(int i = 0; i < (int)s.size() - 5; ++i){
+                string tmp = s.substr(i, 6);
+                if(tmp == merlin || tmp == Merlin)
+                    knight.HP = min(knight.maxHP, knight.HP + 1);
+            }
+        }
+        mer.close();
+    }
+
+    //id = 99, Bowsette my queen
+    void meetBowser(Knights &knight){
+        if(knight.isArthur || (knight.isLancelot && knight.Level >= 8) || knight.Level == maxLevel)
+            knight.Level = maxLevel;
+        else
+            knight.Rescue = 0;
+    }
+
+    //finally, I can write this function
+    void meetEvent(Knights &knight, int index){
+        if(index == 0)
+            success(knight);
+        if(1 <= index && index <= 5)
+            meetNormal(knight, index);
+        if(index == 6)
+            meetShaman(knight, index);
+        if(index == 7)
+            meetSirenVajsh(knight, index);
+        if(index == 11)
+            pickMariomush(knight);
+        if(index == 12)
+            pickFibmush(knight);
+        if(index == 13)
+            pickGhostmush(knight, GhostMush[knight.ghostno++]);
+        if(15 <= index && index <= 17)
+            pickItem(knight, index);
+        if(index == 18 && !knight.metMerlin)
+            meetMerlin(knight);
+        if(index == 19 && !knight.metAsclepius)
+            meetAsclepius(knight);
+        if(index == 99)
+            meetBowser(knight);
+    }
 } event;
 
-struct SpecialEvents{
-
-};
 
 void fileINP(string file_input){
     ifstream in(file_input);
@@ -390,6 +483,12 @@ void fileINP(string file_input){
 }
 
 void adventureToKoopa(string file_input, int & HP, int & level, int & remedy, int & maidenkiss, int & phoenixdown, int & rescue) {
-    //cout << "Function isn't implemented" << endl;
+    fibo();
     fileINP(file_input);
+
+    int eventid = 1;
+    while(knight.Rescue == -1){
+        event.meetEvent(knight, event.ListOfEvents[eventid++]);
+    }
+    knight.display();
 }
