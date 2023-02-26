@@ -207,7 +207,7 @@ struct Events{
 
         if(knight.Level > level0){
             knight.Level = min(maxLevel, knight.Level + 2);
-            return;
+            return; //nice
         }
         if(knight.Level < level0)
             knight.turnTiny();
@@ -417,7 +417,7 @@ struct Events{
                 check[s[j]] = 1;
             if ((check['m'] || check['M']) && 
                 (check['e'] || check['E']) && 
-                (check['r'] || check['R']) && 
+                (check['r'] || check['R']) && //nice
                 (check['l'] || check['L']) && 
                 (check['i'] || check['I']) && 
                 (check['n'] || check['N'])){
