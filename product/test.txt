@@ -1,0 +1,6 @@
+id = 1, level = 1
+1
+HP=152, level=1, remedy=0, maidenkiss=1, phoenixdown=0, rescue=-1,id=3
+id = 2, level = 2
+2
+HP=-38, level=1, remedy=0, maidenkiss=1, phoenixdown=0, rescue=0,id=5

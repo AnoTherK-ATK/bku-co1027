@@ -70,19 +70,19 @@ struct Knights{
     void healthCheck(){
         if (HP <= 0 && PhoenixDown == 0) 
             Rescue = 0;
-        else{
+        else if(HP <= 0 && PhoenixDown > 0){
             --PhoenixDown;
             HP = maxHP;
         }
     }
 
-    void display(){
+    void display(int index){
         cout << "HP=" << HP
             << ", level=" << Level
             << ", remedy=" << Remedy
             << ", maidenkiss=" << MaidenKiss
             << ", phoenixdown=" << PhoenixDown
-            << ", rescue=" << Rescue << endl;
+            << ", rescue=" << Rescue  <<endl;
     }
 
     //tiny man with a tiny nose and tiny penis
@@ -165,13 +165,19 @@ struct Events{
     int numGmEvents = 0;
     void Input(string s){
         stringstream ss(s);
-        string event;
-        while(ss >> event)
-            if(event[0] == '1' && event[1] == '3'){
+        string evet;
+        //cout << s <<endl;
+        while(ss >> evet){
+            //cout << evet << endl;
+            if((int)evet.size() >= 2 && evet[0] == '1' && evet[1] == '3'){
                 ListOfEvents[++numEvents] = 13;
-                GhostMush[++numGmEvents] = event;
+                GhostMush[++numGmEvents] = evet;
             }
-            ListOfEvents[++numEvents] = strtoi(event);
+            ListOfEvents[++numEvents] = strtoi(evet);
+            // cout << numEvents << endl;
+            // for(int i = 1; i <= numEvents; ++i)
+            //     cout << ListOfEvents[i] << endl;
+        }
     }
     
     //id = 0, I've won, but at what cost?
@@ -180,12 +186,14 @@ struct Events{
     }
 
     int levelCalculate(int index){
-        return (index > 6 ? ((index % 10) > 5 ? (index % 10) : 5) : (index % 10));
+        int b = index % 10;
+        return (index > 6 ? (b > 5 ? b : 5) : b);
     }
 
     //id = 1 -> 5, you weak mtfk
-    void meetNormal(Knights &knight, int index){
+    void meetNormal(Knights &knight, int mons, int index){
         int level0 = levelCalculate(index);
+        //cout << "id = " << index <<", level = " << level0<<endl;
 
         if (knight.Level > level0 || knight.isArthur || knight.isLancelot){
             knight.Level = min(maxLevel, knight.Level + 1);
@@ -193,7 +201,7 @@ struct Events{
         }
         if(knight.Level < level0){
             int baseDamage[6] = {0, 10, 15, 45, 75, 95};
-            int damage = level0 * baseDamage[index];
+            int damage = level0 * baseDamage[mons];
             knight.HP -= damage;
             knight.healthCheck();
             return;
@@ -278,8 +286,8 @@ struct Events{
         
         //ms = 1, min max shit
         void pickMush1(int &x, int &y){
-            int mx = INT_MIN;
-            int mn = INT_MAX;
+            int mx = -2147483648;
+            int mn = 2147483647;
             for(int i = 0; i < n; ++i){
                 if(array[i] >= mx){
                     x = i;
@@ -307,8 +315,8 @@ struct Events{
 
         //ms = 3, what the hell is this
         void pickMush3(int &x, int &y){
-            int mx = INT_MIN;
-            int mn = INT_MAX;
+            int mx = -2147483648;
+            int mn = 2147483647;
             for(int i = 0; i < n; ++i){
                 if(arrayTrans[i] > mx){
                     x = i;
@@ -382,6 +390,7 @@ struct Events{
 
     //id = 19, Asclepius with a dildo
     void meetAsclepius(Knights &knight){
+        knight.metAsclepius = 1;
         ifstream asc(l3files[1]);
 
         int n, m;
@@ -403,6 +412,7 @@ struct Events{
 
     //id = 18, witch, kill him
     void meetMerlin(Knights &knight){
+        knight.metMerlin = 1;
         ifstream mer(l3files[2]);
         int n;
         mer >> n;
@@ -441,15 +451,15 @@ struct Events{
     }
 
     //finally, I can write this function
-    void meetEvent(Knights &knight, int index){
+    void meetEvent(Knights &knight, int index, int eventid){
         if(index == 0)
             success(knight);
         if(1 <= index && index <= 5)
-            meetNormal(knight, index);
+            meetNormal(knight, index, eventid);
         if(index == 6)
-            meetShaman(knight, index);
+            meetShaman(knight, eventid);
         if(index == 7)
-            meetSirenVajsh(knight, index);
+            meetSirenVajsh(knight, eventid);
         if(index == 11)
             pickMariomush(knight);
         if(index == 12)
@@ -485,10 +495,19 @@ void fileINP(string file_input){
 void adventureToKoopa(string file_input, int & HP, int & level, int & remedy, int & maidenkiss, int & phoenixdown, int & rescue) {
     fibo();
     fileINP(file_input);
-
+    //freopen("test.txt","w",stdout);
+    // for(int i = 1; i <= event.numEvents; ++i)
+    //     cout << event.ListOfEvents[i] << " ";
+    // cout << endl << event.numEvents << endl;
     int eventid = 1;
-    while(knight.Rescue == -1){
-        event.meetEvent(knight, event.ListOfEvents[eventid++]);
+    while(knight.Rescue == -1 && eventid <= event.numEvents){
+        event.meetEvent(knight, event.ListOfEvents[eventid], eventid);
+        //knight.healthCheck();
+        if(eventid > event.numEvents && knight.HP > 0){
+            knight.Rescue = 1;
+        }
+        knight.display(event.ListOfEvents[eventid]);
+        eventid++;
     }
-    knight.display();
+    //knight.display(0);
 }
