@@ -5,7 +5,7 @@ const int maxLevel = 10;
 const int maxItem = 99;
 const int maxEvent = (int)2e5 + 7; //why it doesn't have a max number of events
 int fib[40];
-string l3files[3];
+string l3files[3]={"", "", ""};
 
 //some functions
 bool isPrime(int x){
@@ -35,11 +35,17 @@ int strtoi(string s){
 void l3input(string file_input){
     int n = 0;
     file_input += ',';
+    cout << file_input << endl;
+    int tmp = 0;
+    cout << l3files[0] << " " << l3files[1] << " " << l3files[2] << endl;
     for(int i = 0; i < (int)file_input.size(); ++i){
-        if(file_input[i] != ',')
-            l3files[n] += file_input[i];
-        else
+        //cout<<file_input[i]<<endl;
+        if(file_input[i] != ','){
+            l3files[n] = l3files[n] + file_input[i];
+        }
+        else{
             ++n;
+        }
     }
 }
 
@@ -173,10 +179,12 @@ struct Events{
                 ListOfEvents[++numEvents] = 13;
                 GhostMush[++numGmEvents] = evet;
             }
-            ListOfEvents[++numEvents] = strtoi(evet);
-            // cout << numEvents << endl;
-            // for(int i = 1; i <= numEvents; ++i)
-            //     cout << ListOfEvents[i] << endl;
+            else
+                ListOfEvents[++numEvents] = strtoi(evet);
+            //  cout << numEvents << endl;
+            //  for(int i = 1; i <= numEvents; ++i)
+            //      cout << ListOfEvents[i] << " ";
+            //  cout << endl;
         }
     }
     
@@ -358,8 +366,11 @@ struct Events{
 
     void pickGhostmush(Knights &knight, string s){
         int list[maxEvent], numlist = 0;
-        for(int i = 2; i < (int)s.size(); ++i)
+        cout << s << endl;
+        for(int i = 2; i < (int)s.size(); ++i){
             list[++numlist] = s[i] - '0';
+            cout << list[numlist] <<endl;
+        }
         ghostmush.Input(l3files[0]);
         for(int i = 1; i <= numlist; ++i){
             int x, y;
@@ -486,9 +497,16 @@ void fileINP(string file_input){
 
     getline(in, sinp);
     event.Input(sinp);
-
+    for(int i = 1; i <= event.numEvents; ++i)
+        cout << event.ListOfEvents[i] << " ";
+    cout << endl << event.numEvents << endl;
+    cout << event.numGmEvents << endl;
+    for(int i = 1; i <= event.numGmEvents; ++i)
+        cout << event.GhostMush[i] << " ";
     getline(in, sinp);
+    cout << sinp << endl;
     l3input(sinp);
+    cout << l3files[0] << " " << l3files[1] << " " << l3files[2] <<endl;
     in.close();
 }
 
@@ -496,14 +514,12 @@ void adventureToKoopa(string file_input, int & HP, int & level, int & remedy, in
     fibo();
     fileINP(file_input);
     //freopen("test.txt","w",stdout);
-    // for(int i = 1; i <= event.numEvents; ++i)
-    //     cout << event.ListOfEvents[i] << " ";
-    // cout << endl << event.numEvents << endl;
+
     int eventid = 1;
     while(knight.Rescue == -1 && eventid <= event.numEvents){
         event.meetEvent(knight, event.ListOfEvents[eventid], eventid);
         //knight.healthCheck();
-        if(eventid > event.numEvents && knight.HP > 0){
+        if(eventid >= event.numEvents && knight.HP > 0){
             knight.Rescue = 1;
         }
         knight.display(event.ListOfEvents[eventid]);
