@@ -5,9 +5,13 @@ const int maxLevel = 10;
 const int maxItem = 99;
 const int maxEvent = (int)2e5 + 7; //why it doesn't have a max number of events
 int fib[40];
-string l3files[3]={"", "", ""};
+string l3files0;
+string l3files1;
+string l3files2;
 
 //some functions
+
+
 bool isPrime(int x){
     if(x <= 1) return 0;
     for(int i = 2; i * i <= x; ++i){
@@ -32,22 +36,29 @@ int strtoi(string s){
     return ans;
 }
 
-void l3input(string file_input){
-    int n = 0;
-    file_input += ',';
-    cout << file_input << endl;
-    int tmp = 0;
-    cout << l3files[0] << " " << l3files[1] << " " << l3files[2] << endl;
-    for(int i = 0; i < (int)file_input.size(); ++i){
-        //cout<<file_input[i]<<endl;
-        if(file_input[i] != ','){
-            l3files[n] = l3files[n] + file_input[i];
-        }
-        else{
-            ++n;
+
+
+//fuck files
+struct L3files{
+    string fileno[3];
+    void addstring(int index, string t){
+        fileno[index] = t;
+    }
+    
+    void Input(string filename){
+        int n = 0;
+        string tmp = "";
+        filename += ',';
+        for(int i = 0; i < (int)filename.size(); ++i){
+            if(filename[i] != ','){
+                tmp += filename[i];
+            }else{
+                addstring(n++, tmp);
+                tmp = "";
+            }
         }
     }
-}
+} line3;
 
 //I served with his majesty
 struct Knights{
@@ -82,7 +93,7 @@ struct Knights{
         }
     }
 
-    void display(int index){
+    void display(){
         cout << "HP=" << HP
             << ", level=" << Level
             << ", remedy=" << Remedy
@@ -279,16 +290,29 @@ struct Events{
             getline(mg, s);
             s = s + ',';
             int idx = 0;
+            bool negative = 0;
             for(int i = 0; i < (int)s.size(); ++i){
-                if(s[i] != ',')
-                    array[idx] = array[idx] * 10 + (s[i] - '0');
-                else
+                if(s[i] != ','){
+                    if(s[i] == '-'){
+                        negative = 1;
+                    }
+                    else 
+                        array[idx] = array[idx] * 10 + (s[i] - '0');
+                }
+                else{
+                    if(negative) array[idx] *= -1;
+                    negative = 0;
                     ++idx;
+                }
+                    
             }
             for(int i = 0; i < n; ++i){
                 arrayTrans[i] = abs(array[i]);
                 arrayTrans[i] = (17 * arrayTrans[i] + 9) % 257;
             }
+            // for(int i = 0; i < n; ++i){
+            //     cout << array[i] << " " << arrayTrans[i] << endl;
+            // }
             mg.close();
         }
         
@@ -313,10 +337,17 @@ struct Events{
             val = -2;
             pos = -3;
             int l = 0, r = n - 1;
-            while(l != n - 1 && array[l] < array[l + 1])
+            //cout << "l:";
+            while(l != n - 1 && array[l] < array[l + 1]){
                 ++l;
-            while(r != 1 && array[r] > array[r - 1]);
+                //cout << l << " ";
+            }
+            //cout << endl << "r:";
+            while(r != 1 && array[r] < array[r - 1]){
                 --r;
+                //cout << r << " ";
+            }
+            //cout << endl;
             if(l != r) return;
             val = array[l], pos = l;
         }
@@ -349,6 +380,7 @@ struct Events{
                     if(arrayTrans[i] < mx && arrayTrans[i] >= mn){
                         val = arrayTrans[i];
                         pos = i;
+                        //cout << val << " " << pos << endl;
                         return;
                     }
                 }
@@ -357,6 +389,7 @@ struct Events{
                     if(arrayTrans[i] < mx && arrayTrans[i] > mn){
                         val = arrayTrans[i];
                         pos = i;
+                        //cout << val << " " << pos << endl;
                         return;
                     }
                 }
@@ -366,24 +399,38 @@ struct Events{
 
     void pickGhostmush(Knights &knight, string s){
         int list[maxEvent], numlist = 0;
-        cout << s << endl;
+        //cout << s << endl;
         for(int i = 2; i < (int)s.size(); ++i){
             list[++numlist] = s[i] - '0';
-            cout << list[numlist] <<endl;
+            //cout << list[i] <<" ";
         }
-        ghostmush.Input(l3files[0]);
+        //cout << endl;
+        ghostmush.Input(line3.fileno[0]);
         for(int i = 1; i <= numlist; ++i){
             int x, y;
-            if(list[i] == 1)
+            if(list[i] == 1){
                 ghostmush.pickMush1(x, y);
-            if(list[i] == 2)
+                //cout << "mush 1 done" << endl;
+                //knight.display();
+            }
+            if(list[i] == 2){
                 ghostmush.pickMush2(x, y);
-            if(list[i] == 3)
+                //cout << "mush 2 done" << endl;
+                //knight.display();
+            }
+            if(list[i] == 3){
                 ghostmush.pickMush3(x, y);
-            if(list[i] == 4)
+                //cout << "mush 3 done" << endl;
+                //knight.display();
+            }
+            if(list[i] == 4){
                 ghostmush.pickMush4(x, y);
+                //cout << "mush 4 done" << endl;
+                //knight.display();
+            }
             knight.HP = knight.HP - (x + y);
             knight.healthCheck();
+            //knight.display();
             if(knight.Rescue == 0)
                 return;
         }
@@ -402,7 +449,7 @@ struct Events{
     //id = 19, Asclepius with a dildo
     void meetAsclepius(Knights &knight){
         knight.metAsclepius = 1;
-        ifstream asc(l3files[1]);
+        ifstream asc(line3.fileno[1]);
 
         int n, m;
         asc >> n >> m;
@@ -424,7 +471,7 @@ struct Events{
     //id = 18, witch, kill him
     void meetMerlin(Knights &knight){
         knight.metMerlin = 1;
-        ifstream mer(l3files[2]);
+        ifstream mer(line3.fileno[2]);
         int n;
         mer >> n;
         string Merlin = "Merlin";
@@ -497,16 +544,16 @@ void fileINP(string file_input){
 
     getline(in, sinp);
     event.Input(sinp);
-    for(int i = 1; i <= event.numEvents; ++i)
-        cout << event.ListOfEvents[i] << " ";
-    cout << endl << event.numEvents << endl;
-    cout << event.numGmEvents << endl;
-    for(int i = 1; i <= event.numGmEvents; ++i)
-        cout << event.GhostMush[i] << " ";
+    // for(int i = 1; i <= event.numEvents; ++i)
+    //     cout << event.ListOfEvents[i] << " ";
+    // cout << endl << event.numEvents << endl;
+    // cout << event.numGmEvents << endl;
+    // for(int i = 1; i <= event.numGmEvents; ++i)
+    //     cout << event.GhostMush[i] << " ";
     getline(in, sinp);
-    cout << sinp << endl;
-    l3input(sinp);
-    cout << l3files[0] << " " << l3files[1] << " " << l3files[2] <<endl;
+    //cout << sinp << endl;
+    line3.Input(sinp);
+    //cout << l3files[0] << " " << l3files[1] << " " << l3files[2] <<endl;
     in.close();
 }
 
@@ -517,12 +564,14 @@ void adventureToKoopa(string file_input, int & HP, int & level, int & remedy, in
 
     int eventid = 1;
     while(knight.Rescue == -1 && eventid <= event.numEvents){
+        
         event.meetEvent(knight, event.ListOfEvents[eventid], eventid);
         //knight.healthCheck();
         if(eventid >= event.numEvents && knight.HP > 0){
             knight.Rescue = 1;
         }
-        knight.display(event.ListOfEvents[eventid]);
+        knight.checkStatus();
+        knight.display();
         eventid++;
     }
     //knight.display(0);
