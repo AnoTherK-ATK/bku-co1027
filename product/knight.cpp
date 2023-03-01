@@ -446,6 +446,15 @@ struct Events{
             knight.PhoenixDown = min(knight.PhoenixDown + 1, maxItem);
     }
 
+    int chooseItem(Knights &knight, int index){
+        if(index == 16)
+            return knight.Remedy;
+        if(index == 17)
+            return knight.MaidenKiss;
+        else
+            return knight.PhoenixDown;
+    }
+
     //id = 19, Asclepius with a dildo
     void meetAsclepius(Knights &knight){
         knight.metAsclepius = 1;
@@ -458,7 +467,7 @@ struct Events{
             for(int j = 1; j <= m; ++j){
                 int x;
                 asc >> x;
-                if(cnt != 3 && (16 <= x && x <= 18)){
+                if(cnt != 3 && (16 <= x && x <= 18) && chooseItem(knight, x) < maxItem){
                     ++cnt;
                     pickItem(knight, x - 1);
                 }
