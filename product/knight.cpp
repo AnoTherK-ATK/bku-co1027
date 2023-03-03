@@ -11,7 +11,6 @@ string l3files2;
 
 //some functions
 
-
 bool isPrime(int x){
     if(x <= 1) return 0;
     for(int i = 2; i * i <= x; ++i){
@@ -553,8 +552,8 @@ void fileINP(string file_input){
 
     getline(in, sinp);
     event.Input(sinp);
-    for(int i = 1; i <= event.numEvents; ++i)
-        cout << event.ListOfEvents[i] << " ";
+    // for(int i = 1; i <= event.numEvents; ++i)
+    //     cout << event.ListOfEvents[i] << " ";
     cout << endl;
     // cout << endl << event.numEvents << endl;
     // cout << event.numGmEvents << endl;
@@ -574,7 +573,7 @@ void adventureToKoopa(string file_input, int HP, int level, int remedy, int maid
 
     int eventid = 1;
     while(knight.Rescue == -1 && eventid <= event.numEvents){
-        cout << event.ListOfEvents[eventid] << endl;
+        //cout << event.ListOfEvents[eventid] << endl;
         event.meetEvent(knight, event.ListOfEvents[eventid], eventid);
         //knight.healthCheck();
         if(eventid >= event.numEvents && knight.HP > 0){
