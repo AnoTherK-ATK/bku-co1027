@@ -23,7 +23,7 @@ bool isPrime(int x){
 void fibo(){
     fib[0] = 1;
     fib[1] = 1;
-    for(int i = 2; i <= 40; ++i){
+    for(int i = 2; i < 40; ++i){
         fib[i] = fib[i - 1] + fib[i - 2];
     }
 }
@@ -553,8 +553,9 @@ void fileINP(string file_input){
 
     getline(in, sinp);
     event.Input(sinp);
-    // for(int i = 1; i <= event.numEvents; ++i)
-    //     cout << event.ListOfEvents[i] << " ";
+    for(int i = 1; i <= event.numEvents; ++i)
+        cout << event.ListOfEvents[i] << " ";
+    cout << endl;
     // cout << endl << event.numEvents << endl;
     // cout << event.numGmEvents << endl;
     // for(int i = 1; i <= event.numGmEvents; ++i)
@@ -566,14 +567,14 @@ void fileINP(string file_input){
     in.close();
 }
 
-void adventureToKoopa(string file_input, int & HP, int & level, int & remedy, int & maidenkiss, int & phoenixdown, int & rescue) {
+void adventureToKoopa(string file_input, int HP, int level, int remedy, int maidenkiss, int phoenixdown, int rescue) {
     fibo();
     fileINP(file_input);
     //freopen("test.txt","w",stdout);
 
     int eventid = 1;
     while(knight.Rescue == -1 && eventid <= event.numEvents){
-        
+        cout << event.ListOfEvents[eventid] << endl;
         event.meetEvent(knight, event.ListOfEvents[eventid], eventid);
         //knight.healthCheck();
         if(eventid >= event.numEvents && knight.HP > 0){
