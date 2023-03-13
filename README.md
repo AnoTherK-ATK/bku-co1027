@@ -7,7 +7,7 @@ Well yes, this is a big assignment from Bach Khoa University, I just wanted to s
 
 ## How to use and how to "legally" submit
 Just delete all the comments in the product/knight.cpp file and submit knight.h and knight.cpp only
-~~I don't want a lecturer will see all the comments~
+~~I don't want a lecturer will see all the comments~~
 
 ## :important: IMPORTANT NOTE:
 READ ALL THE CODE AND UNDERSTAND IT PLEASE.
